@@ -16,6 +16,8 @@ const css = `
   th { color: var(--mute); font-weight: normal; }
   .warn { color: var(--warn); }
   .mute { color: var(--mute); }
+  .tag { display: inline-block; border: 1px solid var(--line); padding: 0 .45rem; margin-right: .4rem; }
+  .tag.warn { border-color: var(--warn); }
 `;
 
 export function Layout(props: { title: string; lane: Lane; children: Child }) {
