@@ -1,0 +1,42 @@
+name: deploy-preview
+# Uploads the digest preview as an artifact (not a commit): AGENTS.md forbids committing
+# previews, ADR 0003 wants the page overwritable on the same link. Clean state per plan §4.
+on:
+  workflow_dispatch:
+  # push:
+  #   paths: ["src/**", "scripts/**", "runs/**"]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v5
+        with:
+          version: 11
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: test
+        run: pnpm install --frozen-lockfile=false && pnpm test
+      - name: save the clean preview
+        run: pnpm save-preview -- 2026-10-28 published/index.html --no-marker
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: published
+      - id: deployment
+        uses: actions/deploy-pages@v4
