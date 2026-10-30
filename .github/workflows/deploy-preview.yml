@@ -29,7 +29,6 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-          cache: pnpm
       - name: test
         run: pnpm install --frozen-lockfile=false && pnpm test
       - name: save the clean preview
